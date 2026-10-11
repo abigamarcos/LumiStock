@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title> LumiStock | Ventas e Inventario</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f5f3f7;
+            color: #333;
+        }
+
+        /* ENCABEZADO */
+
+        header {
+            background: linear-gradient(135deg, #65427d, #a77bbb);
+            color: white;
+            padding: 30px 7%;
+        }
+
+        .encabezado {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        .logo p {
+            margin: 7px 0 0;
+            opacity: 0.9;
+        }
+
+        .icono-logo {
+            background-color: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 30px;
+        }
+
+        /* MENU */
+
+        nav {
+            background-color: white;
+            padding: 12px 7%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        nav button {
+            background: none;
+            border: none;
+            color: #555;
+            padding: 12px 18px;
+            margin-right: 5px;
+            cursor: pointer;
+            font-size: 15px;
+            border-radius: 8px;
+        }
+
+        nav button:hover {
+            background-color: #f0e8f4;
+            color: #704b82;
+        }
+
+        /* CONTENEDOR */
+
+        main {
+            width: 86%;
+            max-width: 1200px;
+            margin: 30px auto;
+        }
+
+        .seccion {
+            display: block;
+        }
+
+        .oculto {
+            display: none;
+        }
+
+        /* TARJETAS */
+
+        .tarjeta {
+            background-color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+        }
+
+        .titulo-seccion {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #65427d;
+            margin: 0;
+        }
+
+        /* RESUMEN */
+
+        .resumen {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-top: 25px;
+        }
+
+        .estadistica {
+            padding: 22px;
+            border-radius: 13px;
+            background-color: #f7f1fa;
+            border-left: 5px solid #9870aa;
+        }
+
+        .estadistica span {
+            font-size: 28px;
+            font-weight: bold;
+            color: #65427d;
+        }
+
+        .estadistica p {
+            margin-bottom: 0;
+            color: #777;
+        }
+
+        /* BOTONES */
+
+        .boton {
+            background-color: #76528c;
+            color: white;
+            border: none;
+            padding: 11px 17px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .boton:hover {
+            background-color: #59366e;
+        }
+
+        .boton-secundario {
+            background-color: #888;
+        }
+
+        .boton-editar {
+            background-color: #d69a3a;
+        }
+
+        .boton-eliminar {
+            background-color: #c75b65;
+        }
+
+        /* FORMULARIOS */
+
+        .formulario {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 10px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d8d2dc;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #9870aa;
+        }
+
+        /* TABLAS */
+
+        .tabla-contenedor {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th {
+            background-color: #76528c;
+            color: white;
+            padding: 13px;
+            text-align: center;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+        }
+
+        tr:hover {
+            background-color: #faf7fb;
+        }
+
+        /* VENTAS */
+
+        .venta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .total-venta {
+            background-color: #f4edf7;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .total-venta h3 {
+            color: #65427d;
+            font-size: 25px;
+        }
+
+        #resultadoVenta {
+            line-height: 1.8;
+            font-weight: bold;
+            color: #65427d;
+        }
+
+        /* QR */
+
+        .qr-contenedor {
+            text-align: center;
+        }
+
+        #codigoQR {
+            display: flex;
+            justify-content: center;
+            margin: 20px auto;
+        }
+
+        .qr-contenedor p {
+            color: #777;
+        }
+
+        /* MENSAJES */
+
+        .mensaje {
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f5edf8;
+            color: #65427d;
+            margin-top: 15px;
+            display: none;
+        }
+
+        /* PIE */
+
+        footer {
+            background-color: #493158;
+            color: white;
+            text-align: center;
+            padding: 25px;
+            margin-top: 50px;
+        }
+
+        footer p {
+            margin: 5px;
+        }
+
+        /* CELULAR */
+
+        @media (max-width: 800px) {
+
+            .encabezado {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .resumen {
+                grid-template-columns: 1fr;
+            }
+
+            .formulario {
+                grid-template-columns: 1fr;
+            }
+
+            .venta-grid {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                text-align: center;
+            }
+
+            nav button {
+                margin: 3px;
+            }
+
+            main {
+                width: 94%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- ENCABEZADO -->
+
+    <header>
+
+        <div class="encabezado">
+
+            <div class="logo">
+
+                <h1>LumiStock</h1>
+
+                <p>
+                    Sistema de ventas e inventario
+                    para pequeños o medianos emprendimientos
+                </p>
+
+            </div>
+
+            <div class="icono-logo">
+                📦
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- MENU -->
+
+    <nav>
+
+        <button onclick="mostrarSeccion('inicio')">
+            Inicio
+        </button>
+
+        <button onclick="mostrarSeccion('inventario')">
+            Inventario
+        </button>
+
+        <button onclick="mostrarSeccion('ventas')">
+            Ventas
+        </button>
+
+        <button onclick="mostrarSeccion('qr')">
+            Código QR
+        </button>
+
+    </nav>
+
+
+    <main>
+
+
+        <!-- INICIO -->
+
+        <section id="inicio" class="seccion">
+
+            <div class="tarjeta">
+
+                <div class="titulo-seccion">
+
+                    <div>
+
+                        <h2>Bienvenidos!!</h2>
+
+                        <p>
+                            Con este sitio web puedes administrar tus productos y registra
+                            tus ventas desde un solo lugar.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="resumen">
+
+                    <div class="estadistica">
+
+                        <span id="totalProductos">
+                            0
+                        </span>
+
+                        <p>
+                            Productos registrados
+                        </p>
+
+                    </div>
+
+
+                    <div class="estadistica">
+
+                        <span id="totalVentas">
+                            0
+                        </span>
+
+                        <p>
+                            Ventas realizadas
+                        </p>
+
+                    </div>
+
+
+                    <div class="estadistica">
+
+                        <span id="dineroVentas">
+                            Q0.00
+                        </span>
+
+                        <p>
+                            Total vendido
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="tarjeta">
+
+                <h2>¿Qué puedes hacer?</h2>
+
+                <p>
+                    Utiliza este sistema para registrar productos,
+                    controlar cantidades, modificar información
+                    y registrar las ventas de tu emprendimiento.
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- INVENTARIO -->
+
+        <section id="inventario" class="seccion oculto">
+
+            <div class="tarjeta">
+
+                <div class="titulo-seccion">
+
+                    <h2> Inventario</h2>
+
+                </div>
+
+
+                <input
+                    type="hidden"
+                    id="indiceEditar"
+                >
+
+
+                <div class="formulario">
+
+                    <input
+                        type="text"
+                        id="nombreProducto"
+                        placeholder="Nombre del producto"
+                    >
+
+                    <input
+                        type="number"
+                        id="precioProducto"
+                        placeholder="Precio Q"
+                        step="0.01"
+                    >
+
+                    <input
+                        type="number"
+                        id="cantidadProducto"
+                        placeholder="Cantidad"
+                    >
+
+                    <button
+                        class="boton"
+                        onclick="guardarProducto()"
+                    >
+                        Guardar
+                    </button>
+
+                </div>
+
+
+                <br>
+
+                <button
+                    class="boton boton-secundario"
+                    onclick="limpiarFormulario()"
+                >
+                    Limpiar
+                </button>
+
+            </div>
+
+
+            <div class="tarjeta">
+
+                <div class="titulo-seccion">
+
+                    <h2>Productos registrados</h2>
+
+                    <input
+                        type="text"
+                        id="buscar"
+                        placeholder="🔎 Buscar producto..."
+                        onkeyup="mostrarInventario()"
+                        style="max-width:250px;"
+                    >
+
+                </div>
+
+
+                <div class="tabla-contenedor">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Producto</th>
+
+                                <th>Precio</th>
+
+                                <th>Cantidad</th>
+
+                                <th>Acciones</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="tablaInventario">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- VENTAS -->
+
+        <section id="ventas" class="seccion oculto">
+
+            <div class="venta-grid">
+
+
+                <div class="tarjeta">
+
+                    <h2>🛒 Registrar venta</h2>
+
+                    <br>
+
+                    <label>
+                        Producto
+                    </label>
+
+                    <select id="productoVenta">
+
+                        <option value="">
+                            Selecciona un producto
+                        </option>
+
+                    </select>
+
+                    <br><br>
+
+
+                    <label>
+                        Cantidad
+                    </label>
+
+                    <input
+                        type="number"
+                        id="cantidadVenta"
+                        placeholder="Cantidad"
+                    >
+
+                    <br><br>
+
+
+                    <label>
+                        Dinero recibido
+                    </label>
+
+                    <input
+                        type="number"
+                        id="dineroRecibido"
+                        placeholder="Q"
+                        step="0.01"
+                    >
+
+                    <br><br>
+
+
+                    <button
+                        class="boton"
+                        onclick="registrarVenta()"
+                    >
+                        Registrar venta
+                    </button>
+
+
+                    <div
+                        id="resultadoVenta"
+                        class="total-venta"
+                    >
+                        Total: Q0.00
+                    </div>
+
+                </div>
+
+
+
+                <div class="tarjeta">
+
+                    <h2>Historial de ventas</h2>
+
+                    <div class="tabla-contenedor">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Producto</th>
+
+                                    <th>Cantidad</th>
+
+                                    <th>Total</th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody id="tablaVentas">
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- QR -->
+
+        <section id="qr" class="seccion oculto">
+
+            <div class="tarjeta qr-contenedor">
+
+                <h2>Código QR</h2>
+
+                <p>
+                    Escanea este código qr con tu celular
+                    para abrir esta página.
+                </p>
+
+
+                <div id="codigoQR"></div>
+
+
+                <p>
+                    El código QR utiliza la dirección
+                    actual de esta página.
+                </p>
+
+
+                <button
+                    class="boton"
+                    onclick="crearQR()"
+                >
+                    Actualizar código QR
+                </button>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- PIE -->
+
+    <footer>
+
+        <p>
+            <strong>LumiStock</strong>
+        </p>
+
+        <p>
+            Sistema de ventas e inventario
+        </p>
+
+        <p>
+            Proyecto escolar
+        </p>
+
+    </footer>
+
+
+
+    <script>
+
+        /* DATOS */
+
+        let inventario =
+            JSON.parse(localStorage.getItem("inventario")) || [];
+
+        let ventas =
+            JSON.parse(localStorage.getItem("ventas")) || [];
+
+
+        /* CAMBIAR SECCIONES */
+
+        function mostrarSeccion(seccion) {
+
+            document
+                .querySelectorAll(".seccion")
+                .forEach(function(elemento) {
+
+                    elemento.classList.add("oculto");
+
+                });
+
+
+            document
+                .getElementById(seccion)
+                .classList.remove("oculto");
+
+
+            if (seccion === "inventario") {
+
+                mostrarInventario();
+
+            }
+
+
+            if (seccion === "ventas") {
+
+                actualizarProductosVenta();
+
+                mostrarVentas();
+
+            }
+
+
+            if (seccion === "qr") {
+
+                crearQR();
+
+            }
+
+        }
+
+
+        /* GUARDAR PRODUCTO */
+
+        function guardarProducto() {
+
+            let nombre =
+                document
+                .getElementById("nombreProducto")
+                .value
+                .trim();
+
+
+            let precio =
+                parseFloat(
+                    document
+                    .getElementById("precioProducto")
+                    .value
+                );
+
+
+            let cantidad =
+                parseInt(
+                    document
+                    .getElementById("cantidadProducto")
+                    .value
+                );
+
+
+            let indice =
+                document
+                .getElementById("indiceEditar")
+                .value;
+
+
+            if (
+                nombre === "" ||
+                isNaN(precio) ||
+                isNaN(cantidad)
+            ) {
+
+                alert(
+                    "Completa todos los datos del producto."
+                );
+
+                return;
+
+            }
+
+
+            if (precio < 0 || cantidad < 0) {
+
+                alert(
+                    "El precio y la cantidad no pueden ser negativos."
+                );
+
+                return;
+
+            }
+
+
+            if (indice === "") {
+
+                inventario.push({
+
+                    nombre: nombre,
+
+                    precio: precio,
+
+                    cantidad: cantidad
+
+                });
+
+            }
+
+            else {
+
+                inventario[indice] = {
+
+                    nombre: nombre,
+
+                    precio: precio,
+
+                    cantidad: cantidad
+
+                };
+
+            }
+
+
+            guardarDatos();
+
+            limpiarFormulario();
+
+            mostrarInventario();
+
+            actualizarProductosVenta();
+
+            actualizarResumen();
+
+
+            alert(
+                "Producto guardado correctamente."
+            );
+
+        }
+
+
+        /* MOSTRAR INVENTARIO */
+
+        function mostrarInventario() {
+
+            let tabla =
+                document
+                .getElementById("tablaInventario");
+
+
+            let buscar =
+                document
+                .getElementById("buscar")
+                .value
+                .toLowerCase();
+
+
+            tabla.innerHTML = "";
+
+
+            inventario.forEach(
+                function(producto, indice) {
+
+
+                    if (
+                        producto.nombre
+                        .toLowerCase()
+                        .includes(buscar)
+                    ) {
+
+
+                        let fila =
+                            tabla.insertRow();
+
+
+                        fila.insertCell(0)
+                            .innerHTML =
+                            producto.nombre;
+
+
+                        fila.insertCell(1)
+                            .innerHTML =
+                            "Q" +
+                            producto.precio.toFixed(2);
+
+
+                        fila.insertCell(2)
+                            .innerHTML =
+                            producto.cantidad;
+
+
+                        let acciones =
+                            fila.insertCell(3);
+
+
+                        let editar =
+                            document.createElement("button");
+
+
+                        editar.innerHTML =
+                            "Editar";
+
+
+                        editar.className =
+                            "boton boton-editar";
+
+
+                        editar.onclick =
+                            function() {
+
+                                editarProducto(indice);
+
+                            };
+
+
+                        let eliminar =
+                            document.createElement("button");
+
+
+                        eliminar.innerHTML =
+                            "Eliminar";
+
+
+                        eliminar.className =
+                            "boton boton-eliminar";
+
+
+                        eliminar.onclick =
+                            function() {
+
+                                eliminarProducto(indice);
+
+                            };
+
+
+                        acciones.appendChild(editar);
+
+                        acciones.appendChild(eliminar);
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /* EDITAR */
+
+        function editarProducto(indice) {
+
+            let producto =
+                inventario[indice];
+
+
+            document
+                .getElementById("nombreProducto")
+                .value =
+                producto.nombre;
+
+
+            document
+                .getElementById("precioProducto")
+                .value =
+                producto.precio;
+
+
+            document
+                .getElementById("cantidadProducto")
+                .value =
+                producto.cantidad;
+
+
+            document
+                .getElementById("indiceEditar")
+                .value =
+                indice;
+
+
+            window.scrollTo({
+
+                top: 0,
+
+                behavior: "smooth"
+
+            });
+
+        }
+
+
+        /* ELIMINAR */
+
+        function eliminarProducto(indice) {
+
+            let confirmar =
+                confirm(
+                    "¿Quieres eliminar este producto?"
+                );
+
+
+            if (confirmar) {
+
+                inventario.splice(indice, 1);
+
+                guardarDatos();
+
+                mostrarInventario();
+
+                actualizarProductosVenta();
+
+                actualizarResumen();
+
+            }
+
+        }
+
+
+        /* LIMPIAR */
+
+        function limpiarFormulario() {
+
+            document
+                .getElementById("nombreProducto")
+                .value = "";
+
+
+            document
+                .getElementById("precioProducto")
+                .value = "";
+
+
+            document
+                .getElementById("cantidadProducto")
+                .value = "";
+
+
+            document
+                .getElementById("indiceEditar")
+                .value = "";
+
+        }
+
+
+        /* PRODUCTOS PARA VENTA */
+
+        function actualizarProductosVenta() {
+
+            let select =
+                document
+                .getElementById("productoVenta");
+
+
+            select.innerHTML =
+                '<option value="">Selecciona un producto</option>';
+
+
+            inventario.forEach(
+                function(producto, indice) {
+
+
+                    let opcion =
+                        document.createElement("option");
+
+
+                    opcion.value =
+                        indice;
+
+
+                    opcion.textContent =
+                        producto.nombre +
+                        " - Q" +
+                        producto.precio.toFixed(2);
+
+
+                    select.appendChild(opcion);
+
+                }
+            );
+
+        }
+
+
+        /* REGISTRAR VENTA */
+
+        function registrarVenta() {
+
+            let indice =
+                document
+                .getElementById("productoVenta")
+                .value;
+
+
+            let cantidad =
+                parseInt(
+                    document
+                    .getElementById("cantidadVenta")
+                    .value
+                );
+
+
+            let recibido =
+                parseFloat(
+                    document
+                    .getElementById("dineroRecibido")
+                    .value
+                );
+
+
+            if (
+                indice === "" ||
+                isNaN(cantidad) ||
+                isNaN(recibido)
+            ) {
+
+                alert(
+                    "Completa todos los datos de la venta."
+                );
+
+                return;
+
+            }
+
+
+            let producto =
+                inventario[indice];
+
+
+            if (cantidad <= 0) {
+
+                alert(
+                    "La cantidad debe ser mayor que cero."
+                );
+
+                return;
+
+            }
+
+
+            if (cantidad > producto.cantidad) {
+
+                alert(
+                    "No hay suficiente producto en inventario."
+                );
+
+                return;
+
+            }
+
+
+            let total =
+                producto.precio * cantidad;
+
+
+            if (recibido < total) {
+
+                alert(
+                    "El dinero recibido no es suficiente."
+                );
+
+                return;
+
+            }
+
+
+            let cambio =
+                recibido - total;
+
+
+            producto.cantidad -= cantidad;
+
+
+            ventas.push({
+
+                producto: producto.nombre,
+
+                cantidad: cantidad,
+
+                total: total
+
+            });
+
+
+            guardarDatos();
+
+
+            document
+                .getElementById("resultadoVenta")
+                .innerHTML =
+
+                "Producto: " +
+                producto.nombre +
+
+                "<br>Cantidad: " +
+                cantidad +
+
+                "<br>Total: Q" +
+                total.toFixed(2) +
+
+                "<br>Recibido: Q" +
+                recibido.toFixed(2) +
+
+                "<br>Cambio: Q" +
+                cambio.toFixed(2);
+
+
+            document
+                .getElementById("cantidadVenta")
+                .value = "";
+
+
+            document
+                .getElementById("dineroRecibido")
+                .value = "";
+
+
+            mostrarInventario();
+
+            mostrarVentas();
+
+            actualizarProductosVenta();
+
+            actualizarResumen();
+
+        }
+
+
+        /* HISTORIAL */
+
+        function mostrarVentas() {
+
+            let tabla =
+                document
+                .getElementById("tablaVentas");
+
+
+            tabla.innerHTML = "";
+
+
+            ventas.forEach(
+                function(venta) {
+
+                    let fila =
+                        tabla.insertRow();
+
+
+                    fila.insertCell(0)
+                        .innerHTML =
+                        venta.producto;
+
+
+                    fila.insertCell(1)
+                        .innerHTML =
+                        venta.cantidad;
+
+
+                    fila.insertCell(2)
+                        .innerHTML =
+                        "Q" +
+                        venta.total.toFixed(2);
+
+                }
+            );
+
+        }
+
+
+        /* RESUMEN */
+
+        function actualizarResumen() {
+
+            document
+                .getElementById("totalProductos")
+                .innerHTML =
+                inventario.length;
+
+
+            document
+                .getElementById("totalVentas")
+                .innerHTML =
+                ventas.length;
+
+
+            let total = 0;
+
+
+            ventas.forEach(
+                function(venta) {
+
+                    total += venta.total;
+
+                }
+            );
+
+
+            document
+                .getElementById("dineroVentas")
+                .innerHTML =
+                "Q" + total.toFixed(2);
+
+        }
+
+
+        /* GUARDAR DATOS */
+
+        function guardarDatos() {
+
+            localStorage.setItem(
+                "inventario",
+                JSON.stringify(inventario)
+            );
+
+
+            localStorage.setItem(
+                "ventas",
+                JSON.stringify(ventas)
+            );
+
+        }
+
+
+        /* CREAR QR */
+
+        function crearQR() {
+
+            let contenedor =
+                document
+                .getElementById("codigoQR");
+
+
+            contenedor.innerHTML = "";
+
+
+            if (typeof QRCode === "undefined") {
+
+                contenedor.innerHTML =
+                    "<p>No se pudo cargar el código QR. Revisa tu conexión a Internet.</p>";
+
+                return;
+
+            }
+
+
+            new QRCode(
+                contenedor,
+                {
+                    text: window.location.href,
+                    width: 200,
+                    height: 200
+                }
+            );
+
+        }
+
+
+        /* INICIAR */
+
+        actualizarResumen();
+
+        actualizarProductosVenta();
+
+    </script>
+
+
+</body>
+
+</html>
